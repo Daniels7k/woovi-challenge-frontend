@@ -1,31 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlinePlus } from "react-icons/ai";
+import { MdEdit, MdDelete } from "react-icons/md";
 
 import AddDespesaInput from "../AddDespesaInput";
 
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridActionsCellItem,
+  GridColumns,
+  GridRowId,
+  GridRowsProp,
+} from "@mui/x-data-grid";
+
 import { Button, TextField } from "@mui/material";
 
 import dayjs from "dayjs";
 
 import style from "./table.module.scss";
-
-const columns: GridColDef[] = [
-  { field: "despesaNome", headerName: "Nome da Despesa", flex: 1 },
-  { field: "categoria", headerName: "Categoria da Despesa", flex: 1 },
-  { field: "data", headerName: "Data", flex: 1 },
-  { field: "valor", headerName: "Valor", flex: 1 },
-];
-
-const rows = [
-  {
-    id: 1,
-    despesaNome: "Compras no Mix",
-    categoria: "Compras",
-    data: "10/10/2022",
-    valor: "R$ 1500,00",
-  },
-];
 
 export default function DataTable() {
   const [initialDate, setInitialDate] = useState("");
@@ -33,6 +24,7 @@ export default function DataTable() {
 
   const [openAddDespesa, setOpenAddDespesa] = useState(false);
 
+  // Setting initial and final date of month
   useEffect(() => {
     const todayDate = dayjs().format("DD/MM/YYYY");
     const initialDateFormated = dayjs(todayDate)
@@ -46,12 +38,6 @@ export default function DataTable() {
     setFinalDate(finalDateFormated);
   }, []);
 
-  //   AddDespesa Functions
-  const handleAddDespesa = (despesaName: String) => {
-    console.log(despesaName);
-    console.log("hey");
-  };
-
   //   Date Functions
   const handleChangeInitialDate = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -64,6 +50,60 @@ export default function DataTable() {
   ) => {
     setFinalDate(event.target.value);
   };
+
+  //   Actions Functions
+  const handleAddDespesa = (despesaName: String) => {
+    console.log(despesaName);
+    console.log("hey");
+  };
+
+  const handleEditClick = (id: GridRowId) => () => {};
+
+  const handleDeleteClick = (id: GridRowId) => () => {};
+
+  // Columns Data
+  const columns: GridColumns = [
+    { field: "despesaNome", headerName: "Nome da Despesa", flex: 1 },
+    { field: "categoria", headerName: "Categoria da Despesa", flex: 1 },
+    { field: "data", headerName: "Data", flex: 1 },
+    { field: "valor", headerName: "Valor", flex: 1 },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Ações",
+      flex: 0.5,
+      cellClassName: "actions",
+      getActions: ({ id }) => {
+        return [
+          <GridActionsCellItem
+            icon={<MdEdit size={25} />}
+            label="Editar"
+            className="textPrimary"
+            onClick={handleEditClick(id)}
+            color="inherit"
+          />,
+
+          <GridActionsCellItem
+            icon={<MdDelete size={25} />}
+            label="Editar"
+            className="textPrimary"
+            onClick={handleEditClick(id)}
+            color="inherit"
+          />,
+        ];
+      },
+    },
+  ];
+
+  const rows: GridRowsProp = [
+    {
+      id: 1,
+      despesaNome: "Compras no Mix",
+      categoria: "Compras",
+      data: "10/10/2022",
+      valor: "R$ 1500,00",
+    },
+  ];
 
   return (
     <div className={style.tableContainer}>
