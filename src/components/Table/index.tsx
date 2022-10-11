@@ -120,7 +120,15 @@ export default function DataTable(props: any) {
   const columns: GridColumns = [
     { field: "despesaNome", headerName: "Nome da Despesa", flex: 1 },
     { field: "categoria", headerName: "Categoria da Despesa", flex: 1 },
-    { field: "data", headerName: "Data", type: "dateTime", flex: 1 },
+    {
+      field: "data",
+      headerName: "Data",
+      type: "dateTime",
+      flex: 1,
+      valueFormatter: (params: GridValueFormatterParams) => {
+        return dayjs(params.value).format("DD/MM/YYYY - HH:mm");
+      },
+    },
     {
       field: "valor",
       headerName: "Valor",
@@ -161,7 +169,7 @@ export default function DataTable(props: any) {
     id: item.id,
     despesaNome: item.name,
     categoria: item.category,
-    data: dayjs(item.releaseDate).format("DD/MM/YYYY - HH:mm"),
+    data: item.releaseDate,
     valor: item.value,
   }));
 
