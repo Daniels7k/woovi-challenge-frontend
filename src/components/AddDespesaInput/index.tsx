@@ -10,8 +10,8 @@ import { Alert, InputAdornment } from "@mui/material";
 export default function AddDespesaInput(props: any) {
   const [despesaName, setDespesaName] = useState("");
   const [category, setCategory] = useState("");
-  const [value, setValue] = useState<number>();
-  const [date, setDate] = useState("");
+  const [value, setValue] = useState("");
+  const [releaseDate, setReleaseDate] = useState("");
 
   const [alert, setAlert] = useState({
     type: "",
@@ -19,7 +19,7 @@ export default function AddDespesaInput(props: any) {
   });
 
   useEffect(() => {
-    setDate(props.todayDate);
+    setReleaseDate(props.todayDate);
   }, [props.todayDate]);
 
   const verifyInputs = () => {
@@ -29,10 +29,16 @@ export default function AddDespesaInput(props: any) {
       setAlert({ type: "error", message: "A categoria é obrigatória" });
     } else if (value === null) {
       setAlert({ type: "error", message: "O valor é obrigatório!" });
-    } else if (date === "") {
+    } else if (releaseDate === "") {
       setAlert({ type: "error", message: "A data é obrigatória!" });
     } else {
-      props.addDespesa(despesaName, category, value, date);
+      const numberValue = parseInt(value);
+      props.addDespesa({
+        despesaName,
+        category,
+        value: numberValue,
+        releaseDate,
+      });
       handleCloseDespesa();
     }
   };
@@ -41,8 +47,8 @@ export default function AddDespesaInput(props: any) {
     props.setOpenAddDespesa();
     setDespesaName("");
     setCategory("");
-    setValue(undefined);
-    setDate(props.todayDate);
+    setValue("");
+    setReleaseDate(props.todayDate);
     setAlert({ type: "", message: "" });
   };
 
@@ -97,7 +103,7 @@ export default function AddDespesaInput(props: any) {
             fullWidth
             variant="standard"
             value={value}
-            onChange={event => setValue(parseInt(event.target.value))}
+            onChange={event => setValue(event.target.value)}
           />
 
           <TextField
@@ -107,8 +113,8 @@ export default function AddDespesaInput(props: any) {
             type="datetime-local"
             fullWidth
             variant="standard"
-            value={date}
-            onChange={event => setDate(event.target.value)}
+            value={releaseDate}
+            onChange={event => setReleaseDate(event.target.value)}
           />
         </DialogContent>
         <DialogActions>

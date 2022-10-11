@@ -24,6 +24,7 @@ import style from "./table.module.scss";
 
 import { useFragment, useMutation } from "react-relay";
 import graphql from "babel-plugin-relay/macro";
+import { IDespesa } from "../../types/Despesa";
 
 export default function DataTable(props: any) {
   const [todayDate, setTodayDate] = useState("");
@@ -80,18 +81,13 @@ export default function DataTable(props: any) {
   };
 
   //   Actions Functions
-  const handleAddDespesa = (
-    despesaName: String,
-    category: String,
-    value: number,
-    date: Date,
-  ) => {
+  const handleAddDespesa = (despesa: IDespesa) => {
     createDespesaMutation({
       variables: {
-        name: despesaName,
-        category: category,
-        value: value,
-        releaseDate: dayjs(date).toISOString(),
+        name: despesa.despesaName,
+        category: despesa.category,
+        value: despesa.value,
+        releaseDate: dayjs(despesa.releaseDate).toISOString(),
       },
       onCompleted(data) {
         console.log(data);
