@@ -10,7 +10,7 @@ import { Alert } from "@mui/material";
 export default function AddDespesaInput(props: any) {
   const [despesaName, setDespesaName] = useState("");
   const [category, setCategory] = useState("");
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState<number>();
   const [date, setDate] = useState("");
 
   const [alert, setAlert] = useState({
@@ -23,12 +23,12 @@ export default function AddDespesaInput(props: any) {
       setAlert({ type: "error", message: "O nome é obrigatório!" });
     } else if (category === "") {
       setAlert({ type: "error", message: "A categoria é obrigatória" });
-    } else if (value === "") {
+    } else if (value === null) {
       setAlert({ type: "error", message: "O valor é obrigatório!" });
     } else if (date === "") {
       setAlert({ type: "error", message: "A data é obrigatória!" });
     } else {
-      props.addDespesa(despesaName);
+      props.addDespesa(despesaName, category, value, date);
       handleCloseDespesa();
     }
   };
@@ -37,7 +37,7 @@ export default function AddDespesaInput(props: any) {
     props.setOpenAddDespesa();
     setDespesaName("");
     setCategory("");
-    setValue("");
+    setValue(undefined);
     setDate("");
     setAlert({ type: "", message: "" });
   };
@@ -88,7 +88,7 @@ export default function AddDespesaInput(props: any) {
             fullWidth
             variant="standard"
             value={value}
-            onChange={event => setValue(event.target.value)}
+            onChange={event => setValue(parseInt(event.target.value))}
           />
 
           <TextField
