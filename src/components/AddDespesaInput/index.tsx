@@ -104,7 +104,7 @@ export default function AddDespesaInput(props: any) {
             required
             margin="dense"
             id="data"
-            type="date"
+            type="datetime-local"
             fullWidth
             variant="standard"
             value={date}

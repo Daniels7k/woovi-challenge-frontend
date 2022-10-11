@@ -33,7 +33,7 @@ export default function DataTable(props: any) {
       fragment Table_table on Despesa @relay(plural: true) {
         id
         name
-        createdAt
+        releaseDate
         category
         value
       }
@@ -43,13 +43,13 @@ export default function DataTable(props: any) {
   const [commitMutation, isMutationInFlight] = useMutation(graphql`
     mutation TableMutation(
       $name: String!
-      $createdAt: String!
+      $releaseDate: String!
       $category: String!
       $value: Float!
     ) {
       createDespesa(
         name: $name
-        createdAt: $createdAt
+        releaseDate: $releaseDate
         category: $category
         value: $value
       ) {
@@ -60,7 +60,7 @@ export default function DataTable(props: any) {
 
   // Setting initial and final date of month
   useEffect(() => {
-    const todayDate = dayjs().format("YYYY-MM-DD");
+    const todayDate = dayjs().format("YYYY-MM-DDTHH:mm");
 
     const initialDateFormated = dayjs(todayDate)
       .startOf("month")
@@ -100,7 +100,7 @@ export default function DataTable(props: any) {
         name: despesaName,
         category: category,
         value: value,
-        createdAt: date,
+        releaseDate: dayjs(date).toISOString(),
       },
       onCompleted(data) {
         console.log(data);
@@ -119,7 +119,7 @@ export default function DataTable(props: any) {
   const columns: GridColumns = [
     { field: "despesaNome", headerName: "Nome da Despesa", flex: 1 },
     { field: "categoria", headerName: "Categoria da Despesa", flex: 1 },
-    { field: "data", headerName: "Data", flex: 1 },
+    { field: "data", headerName: "Data", type: "dateTime", flex: 1 },
     { field: "valor", headerName: "Valor", flex: 1 },
     {
       field: "actions",
@@ -153,7 +153,7 @@ export default function DataTable(props: any) {
     id: item.id,
     despesaNome: item.name,
     categoria: item.category,
-    data: dayjs(item.createdAt).format("DD/MM/YYYY"),
+    data: dayjs(item.releaseDate).format("DD/MM/YYYY - HH:mm"),
     valor: item.value,
   }));
 
