@@ -3,6 +3,7 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { MdEdit, MdDelete } from "react-icons/md";
 
 import { CreateDespesaMutation } from "./mutations/CreateDespesaMutation";
+import { DeleteDespesaMutation } from "./mutations/DeleteDespesaMutation";
 
 import AddDespesaInput from "../AddDespesaInput";
 
@@ -46,6 +47,7 @@ export default function DataTable(props: any) {
 
   //Mutations
   const [createDespesaMutation] = useMutation(CreateDespesaMutation);
+  const [deleteDespesaMutation] = useMutation(DeleteDespesaMutation);
 
   // Setting initial and final date of month
   useEffect(() => {
@@ -102,7 +104,17 @@ export default function DataTable(props: any) {
 
   const handleEditClick = (id: GridRowId) => () => {};
 
-  const handleDeleteClick = (id: GridRowId) => () => {};
+  const handleDeleteClick = (id: GridRowId) => () => {
+    deleteDespesaMutation({
+      variables: { id: id },
+      onCompleted(data) {
+        console.log(data);
+      },
+      onError(error) {
+        console.log(error);
+      },
+    });
+  };
 
   // Columns Data
   const columns: GridColumns = [
@@ -145,7 +157,7 @@ export default function DataTable(props: any) {
             icon={<MdDelete size={25} />}
             label="Editar"
             className="textPrimary"
-            onClick={handleEditClick(id)}
+            onClick={handleDeleteClick(id)}
             color="inherit"
           />,
         ];
