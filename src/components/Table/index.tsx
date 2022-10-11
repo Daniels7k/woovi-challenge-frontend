@@ -18,11 +18,44 @@ import dayjs from "dayjs";
 
 import style from "./table.module.scss";
 
-export default function DataTable() {
+import { useFragment, useMutation } from "react-relay";
+import graphql from "babel-plugin-relay/macro";
+
+export default function DataTable(props: any) {
   const [initialDate, setInitialDate] = useState("");
   const [finalDate, setFinalDate] = useState("");
 
   const [openAddDespesa, setOpenAddDespesa] = useState(false);
+
+  const post = useFragment(
+    graphql`
+      fragment Table_table on Despesa @relay(plural: true) {
+        id
+        name
+        createdAt
+        category
+        value
+      }
+    `,
+    props.data,
+  );
+  const [commitMutation, isMutationInFlight] = useMutation(graphql`
+    mutation TableMutation(
+      $name: String!
+      $createdAt: String!
+      $category: String!
+      $value: Float!
+    ) {
+      createDespesa(
+        name: $name
+        createdAt: $createdAt
+        category: $category
+        value: $value
+      ) {
+        name
+      }
+    }
+  `);
 
   // Setting initial and final date of month
   useEffect(() => {
@@ -52,9 +85,26 @@ export default function DataTable() {
   };
 
   //   Actions Functions
-  const handleAddDespesa = (despesaName: String) => {
-    console.log(despesaName);
-    console.log("hey");
+  const handleAddDespesa = (
+    despesaName: String,
+    category: String,
+    value: number,
+    date: Date,
+  ) => {
+    commitMutation({
+      variables: {
+        name: despesaName,
+        category: category,
+        value: value,
+        createdAt: date,
+      },
+      onCompleted(data) {
+        console.log(data);
+      },
+      onError(error) {
+        console.log(error);
+      },
+    });
   };
 
   const handleEditClick = (id: GridRowId) => () => {};
@@ -95,15 +145,13 @@ export default function DataTable() {
     },
   ];
 
-  const rows: GridRowsProp = [
-    {
-      id: 1,
-      despesaNome: "Compras no Mix",
-      categoria: "Compras",
-      data: "10/10/2022",
-      valor: "R$ 1500,00",
-    },
-  ];
+  const rows: GridRowsProp = post.map((item: any) => ({
+    id: item.id,
+    despesaNome: item.name,
+    categoria: item.category,
+    data: dayjs(item.createdAt).format("DD/MM/YYYY"),
+    valor: item.value,
+  }));
 
   return (
     <div className={style.tableContainer}>
@@ -122,6 +170,7 @@ export default function DataTable() {
             addDespesa={handleAddDespesa}
             setOpenAddDespesa={() => setOpenAddDespesa(false)}
             open={openAddDespesa}
+            disable={isMutationInFlight}
           />
 
           {/* Datas */}
