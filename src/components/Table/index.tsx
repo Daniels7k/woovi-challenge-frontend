@@ -10,6 +10,7 @@ import {
   GridColumns,
   GridRowId,
   GridRowsProp,
+  GridValueFormatterParams,
 } from "@mui/x-data-grid";
 
 import { Button, TextField } from "@mui/material";
@@ -120,7 +121,14 @@ export default function DataTable(props: any) {
     { field: "despesaNome", headerName: "Nome da Despesa", flex: 1 },
     { field: "categoria", headerName: "Categoria da Despesa", flex: 1 },
     { field: "data", headerName: "Data", type: "dateTime", flex: 1 },
-    { field: "valor", headerName: "Valor", flex: 1 },
+    {
+      field: "valor",
+      headerName: "Valor",
+      flex: 1,
+      valueFormatter: (params: GridValueFormatterParams) => {
+        return `R$ ${params.value.toFixed(2)}`;
+      },
+    },
     {
       field: "actions",
       type: "actions",
