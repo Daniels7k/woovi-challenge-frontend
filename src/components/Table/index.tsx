@@ -22,6 +22,7 @@ import { useFragment, useMutation } from "react-relay";
 import graphql from "babel-plugin-relay/macro";
 
 export default function DataTable(props: any) {
+  const [todayDate, setTodayDate] = useState("");
   const [initialDate, setInitialDate] = useState("");
   const [finalDate, setFinalDate] = useState("");
 
@@ -59,14 +60,17 @@ export default function DataTable(props: any) {
 
   // Setting initial and final date of month
   useEffect(() => {
-    const todayDate = dayjs().format("DD/MM/YYYY");
+    const todayDate = dayjs().format("YYYY-MM-DD");
+
     const initialDateFormated = dayjs(todayDate)
       .startOf("month")
       .format("YYYY-MM-DD");
+
     const finalDateFormated = dayjs(todayDate)
       .endOf("month")
       .format("YYYY-MM-DD");
 
+    setTodayDate(todayDate);
     setInitialDate(initialDateFormated);
     setFinalDate(finalDateFormated);
   }, []);
@@ -171,6 +175,7 @@ export default function DataTable(props: any) {
             setOpenAddDespesa={() => setOpenAddDespesa(false)}
             open={openAddDespesa}
             disable={isMutationInFlight}
+            todayDate={todayDate}
           />
 
           {/* Datas */}

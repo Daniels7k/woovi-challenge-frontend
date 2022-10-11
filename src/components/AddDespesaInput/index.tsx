@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Alert } from "@mui/material";
+import { Alert, InputAdornment } from "@mui/material";
 
 export default function AddDespesaInput(props: any) {
   const [despesaName, setDespesaName] = useState("");
@@ -17,6 +17,10 @@ export default function AddDespesaInput(props: any) {
     type: "",
     message: "",
   });
+
+  useEffect(() => {
+    setDate(props.todayDate);
+  }, [props.todayDate]);
 
   const verifyInputs = () => {
     if (despesaName === "") {
@@ -38,7 +42,7 @@ export default function AddDespesaInput(props: any) {
     setDespesaName("");
     setCategory("");
     setValue(undefined);
-    setDate("");
+    setDate(props.todayDate);
     setAlert({ type: "", message: "" });
   };
 
@@ -85,6 +89,11 @@ export default function AddDespesaInput(props: any) {
             label="Valor"
             type="number"
             id="value"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">R$</InputAdornment>
+              ),
+            }}
             fullWidth
             variant="standard"
             value={value}
