@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { MdEdit, MdDelete } from "react-icons/md";
 
+import { CreateDespesaMutation } from "./mutations/CreateDespesaMutation";
+
 import AddDespesaInput from "../AddDespesaInput";
 
 import {
@@ -41,23 +43,9 @@ export default function DataTable(props: any) {
     `,
     props.data,
   );
-  const [commitMutation, isMutationInFlight] = useMutation(graphql`
-    mutation TableMutation(
-      $name: String!
-      $releaseDate: String!
-      $category: String!
-      $value: Float!
-    ) {
-      createDespesa(
-        name: $name
-        releaseDate: $releaseDate
-        category: $category
-        value: $value
-      ) {
-        name
-      }
-    }
-  `);
+
+  //Mutations
+  const [createDespesaMutation] = useMutation(CreateDespesaMutation);
 
   // Setting initial and final date of month
   useEffect(() => {
@@ -96,7 +84,7 @@ export default function DataTable(props: any) {
     value: number,
     date: Date,
   ) => {
-    commitMutation({
+    createDespesaMutation({
       variables: {
         name: despesaName,
         category: category,
@@ -190,7 +178,6 @@ export default function DataTable(props: any) {
             addDespesa={handleAddDespesa}
             setOpenAddDespesa={() => setOpenAddDespesa(false)}
             open={openAddDespesa}
-            disable={isMutationInFlight}
             todayDate={todayDate}
           />
 
