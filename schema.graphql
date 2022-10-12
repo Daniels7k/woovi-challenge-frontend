@@ -3,24 +3,41 @@ schema {
   mutation: Mutation
 }
 
-"""Exposes a URL that specifies the behaviour of this scalar."""
+"""
+Exposes a URL that specifies the behaviour of this scalar.
+"""
 directive @specifiedBy(
-  """The URL that specifies the behaviour of this scalar."""
+  """
+  The URL that specifies the behaviour of this scalar.
+  """
   url: String!
 ) on SCALAR
 
+type Despesa {
+  id: ID
+  name: String
+  releaseDate: String
+  category: String
+  value: Int
+}
+
 type Mutation {
-  createUser(name: String, email: String, password: String): User
+  createDespesa(
+    name: String
+    releaseDate: String
+    category: String
+    value: Float
+  ): Despesa
+  updateDespesa(
+    id: ID
+    name: String
+    releaseDate: String
+    category: String
+    value: Int
+  ): Despesa
+  deleteDespesa(id: ID): Despesa
 }
 
 type RootQuery {
-  getAllUsers: [User]
+  despesas: [Despesa]
 }
-
-type User {
-  id: ID
-  name: String
-  email: String
-  password: String
-}
-
