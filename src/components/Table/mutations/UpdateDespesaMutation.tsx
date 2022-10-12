@@ -7,7 +7,7 @@ export const UpdateDespesaMutation = graphql`
     $releaseDate: String!
     $category: String!
     $value: Int!
-  ) {
+  ) @raw_response_type {
     updateDespesa(
       id: $id
       name: $name
@@ -16,6 +16,10 @@ export const UpdateDespesaMutation = graphql`
       value: $value
     ) {
       id
+      name
+      releaseDate
+      category
+      value
     }
   }
 `;

@@ -104,7 +104,6 @@ export default function DataTable(props: any) {
   };
 
   const handleEditClick = (despesa: any) => {
-    console.log(despesa);
     updateDespesaMutation({
       variables: {
         id: despesa.despesaID,
@@ -118,6 +117,15 @@ export default function DataTable(props: any) {
       },
       onError(error) {
         console.log(error);
+      },
+      optimisticResponse: {
+        updateDespesa: {
+          id: despesa.despesaID,
+          name: despesa.despesaName,
+          category: despesa.category,
+          value: despesa.value,
+          releaseDate: despesa.releaseDate,
+        },
       },
     });
   };
