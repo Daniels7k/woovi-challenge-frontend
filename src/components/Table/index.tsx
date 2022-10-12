@@ -186,7 +186,7 @@ export default function DataTable(props: any) {
             icon={<MdDelete size={25} />}
             label="Editar"
             className="textPrimary"
-            onClick={(params: any) => handleDeleteClick(params.id)}
+            onClick={() => handleDeleteClick(params.id)}
             color="inherit"
           />,
         ];
