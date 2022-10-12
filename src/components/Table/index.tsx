@@ -4,6 +4,7 @@ import { MdEdit, MdDelete } from "react-icons/md";
 
 import { CreateDespesaMutation } from "./mutations/CreateDespesaMutation";
 import { DeleteDespesaMutation } from "./mutations/DeleteDespesaMutation";
+import { UpdateDespesaMutation } from "./mutations/UpdateDespesaMutation";
 
 import AddDespesaInput from "../AddDespesaInput";
 
@@ -25,6 +26,7 @@ import style from "./table.module.scss";
 import { useFragment, useMutation } from "react-relay";
 import graphql from "babel-plugin-relay/macro";
 import { IDespesa } from "../../types/Despesa";
+import EditDespesaInput from "../EditDespesaInput";
 
 export default function DataTable(props: any) {
   const [todayDate, setTodayDate] = useState("");
@@ -32,6 +34,8 @@ export default function DataTable(props: any) {
   const [finalDate, setFinalDate] = useState("");
 
   const [openAddDespesa, setOpenAddDespesa] = useState(false);
+  const [openEditDespesa, setOpenEditDespesa] = useState(false);
+  const [despesaEditData, setDespesaEditData] = useState({});
 
   const post = useFragment(
     graphql`
@@ -49,6 +53,7 @@ export default function DataTable(props: any) {
   //Mutations
   const [createDespesaMutation] = useMutation(CreateDespesaMutation);
   const [deleteDespesaMutation] = useMutation(DeleteDespesaMutation);
+  const [updateDespesaMutation] = useMutation(UpdateDespesaMutation);
 
   // Setting initial and final date of month
   useEffect(() => {
@@ -98,9 +103,26 @@ export default function DataTable(props: any) {
     });
   };
 
-  const handleEditClick = (id: GridRowId) => () => {};
+  const handleEditClick = (despesa: any) => {
+    console.log(despesa);
+    updateDespesaMutation({
+      variables: {
+        id: despesa.despesaID,
+        name: despesa.despesaName,
+        category: despesa.category,
+        value: despesa.value,
+        releaseDate: dayjs(despesa.releaseDate).toISOString(),
+      },
+      onCompleted(data) {
+        console.log(data);
+      },
+      onError(error) {
+        console.log(error);
+      },
+    });
+  };
 
-  const handleDeleteClick = (id: GridRowId) => () => {
+  const handleDeleteClick = (id: GridRowId) => {
     deleteDespesaMutation({
       variables: { id: id },
       onCompleted(data) {
@@ -114,10 +136,10 @@ export default function DataTable(props: any) {
 
   // Columns Data
   const columns: GridColumns = [
-    { field: "despesaNome", headerName: "Nome da Despesa", flex: 1 },
-    { field: "categoria", headerName: "Categoria da Despesa", flex: 1 },
+    { field: "despesaName", headerName: "Nome da Despesa", flex: 1 },
+    { field: "category", headerName: "Categoria da Despesa", flex: 1 },
     {
-      field: "data",
+      field: "releaseData",
       headerName: "Data",
       type: "dateTime",
       flex: 1,
@@ -126,7 +148,7 @@ export default function DataTable(props: any) {
       },
     },
     {
-      field: "valor",
+      field: "value",
       headerName: "Valor",
       flex: 1,
       valueFormatter: (params: GridValueFormatterParams) => {
@@ -139,13 +161,16 @@ export default function DataTable(props: any) {
       headerName: "Ações",
       flex: 0.5,
       cellClassName: "actions",
-      getActions: ({ id }) => {
+      getActions: (params: any) => {
         return [
           <GridActionsCellItem
             icon={<MdEdit size={25} />}
             label="Editar"
             className="textPrimary"
-            onClick={handleEditClick(id)}
+            onClick={() => {
+              setOpenEditDespesa(true);
+              setDespesaEditData(params.row);
+            }}
             color="inherit"
           />,
 
@@ -153,7 +178,7 @@ export default function DataTable(props: any) {
             icon={<MdDelete size={25} />}
             label="Editar"
             className="textPrimary"
-            onClick={handleDeleteClick(id)}
+            onClick={(params: any) => handleDeleteClick(params.id)}
             color="inherit"
           />,
         ];
@@ -163,10 +188,10 @@ export default function DataTable(props: any) {
 
   const rows: GridRowsProp = post.map((item: any) => ({
     id: item.id,
-    despesaNome: item.name,
-    categoria: item.category,
-    data: item.releaseDate,
-    valor: item.value,
+    despesaName: item.name,
+    category: item.category,
+    releaseData: item.releaseDate,
+    value: item.value,
   }));
 
   return (
@@ -189,6 +214,13 @@ export default function DataTable(props: any) {
             todayDate={todayDate}
           />
 
+          <EditDespesaInput
+            editDespesa={handleEditClick}
+            setOpenEditDespesa={() => setOpenEditDespesa(false)}
+            open={openEditDespesa}
+            despesaEditData={despesaEditData}
+          />
+
           {/* Datas */}
           <div className={style.tableDateActions}>
             <TextField
@@ -209,6 +241,7 @@ export default function DataTable(props: any) {
           </div>
         </div>
 
+        {/* DataGrid */}
         <DataGrid
           rows={rows}
           columns={columns}
