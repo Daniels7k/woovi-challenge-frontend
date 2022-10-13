@@ -27,6 +27,7 @@ import { useFragment, useMutation } from "react-relay";
 import graphql from "babel-plugin-relay/macro";
 import { IDespesa } from "../../types/Despesa";
 import EditDespesaInput from "../EditDespesaInput";
+import SnackbarAlert from "../SnackbarAlert";
 
 export default function DataTable(props: any) {
   const [todayDate, setTodayDate] = useState("");
@@ -72,6 +73,26 @@ export default function DataTable(props: any) {
     setFinalDate(finalDateFormated);
   }, []);
 
+  const [openAlert, setOpenAlert] = useState(false);
+  const [alertText, setAlertText] = useState("");
+  const [alertType, setAlertType] = useState("");
+
+  const handleOpenAlert = (alertType: string, alertText: string) => {
+    setAlertText(alertText);
+    setAlertType(alertType);
+    setOpenAlert(true);
+  };
+
+  const handleCloseAlert = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string,
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenAlert(false);
+  };
+
   //   Date Functions
   const handleChangeInitialDate = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -94,11 +115,11 @@ export default function DataTable(props: any) {
         value: despesa.value,
         releaseDate: dayjs(despesa.releaseDate).toISOString(),
       },
-      onCompleted(data) {
-        console.log(data);
+      onCompleted() {
+        handleOpenAlert("success", "Despesa adicionada com sucesso!");
       },
-      onError(error) {
-        console.log(error);
+      onError() {
+        handleOpenAlert("error", "Algo deu errado!");
       },
     });
   };
@@ -113,11 +134,11 @@ export default function DataTable(props: any) {
         value: despesa.value,
         releaseDate: dayjs(despesa.releaseDate).toISOString(),
       },
-      onCompleted(data) {
-        console.log(data);
+      onCompleted() {
+        handleOpenAlert("success", "Despesa atualizada com sucesso!");
       },
-      onError(error) {
-        console.log(error);
+      onError() {
+        handleOpenAlert("error", "Algo deu errado!");
       },
     });
   };
@@ -125,11 +146,11 @@ export default function DataTable(props: any) {
   const handleDeleteClick = (id: GridRowId) => {
     deleteDespesaMutation({
       variables: { id: id },
-      onCompleted(data) {
-        console.log(data);
+      onCompleted() {
+        handleOpenAlert("success", "Despesa excluida com sucesso!");
       },
-      onError(error) {
-        console.log(error);
+      onError() {
+        handleOpenAlert("error", "Algo deu errado!");
       },
     });
   };
@@ -195,63 +216,73 @@ export default function DataTable(props: any) {
   }));
 
   return (
-    <div className={style.tableContainer}>
-      <div className={style.tableBox}>
-        <div className={style.tableActions}>
-          {/* ADD Despesa */}
-          <Button
-            variant="text"
-            onClick={() => setOpenAddDespesa(true)}
-            startIcon={<AiOutlinePlus />}
-          >
-            Adicionar despesa
-          </Button>
+    <>
+      <div className={style.tableContainer}>
+        <div className={style.tableBox}>
+          <div className={style.tableActions}>
+            {/* ADD Despesa */}
+            <Button
+              variant="text"
+              onClick={() => setOpenAddDespesa(true)}
+              startIcon={<AiOutlinePlus />}
+            >
+              Adicionar despesa
+            </Button>
 
-          <AddDespesaInput
-            addDespesa={handleAddDespesa}
-            setOpenAddDespesa={() => setOpenAddDespesa(false)}
-            open={openAddDespesa}
-            todayDate={todayDate}
-          />
-
-          <EditDespesaInput
-            editDespesa={handleEditClick}
-            setOpenEditDespesa={() => setOpenEditDespesa(false)}
-            open={openEditDespesa}
-            despesaEditData={despesaEditData}
-          />
-
-          {/* Datas */}
-          <div className={style.tableDateActions}>
-            <TextField
-              id="outlined"
-              type="date"
-              size="small"
-              value={initialDate}
-              onChange={handleChangeInitialDate}
+            <AddDespesaInput
+              addDespesa={handleAddDespesa}
+              setOpenAddDespesa={() => setOpenAddDespesa(false)}
+              open={openAddDespesa}
+              todayDate={todayDate}
             />
-            a
-            <TextField
-              id="outlined"
-              type="date"
-              size="small"
-              value={finalDate}
-              onChange={handleChangeFinalDate}
+
+            <EditDespesaInput
+              editDespesa={handleEditClick}
+              setOpenEditDespesa={() => setOpenEditDespesa(false)}
+              open={openEditDespesa}
+              despesaEditData={despesaEditData}
             />
+
+            {/* Datas */}
+            <div className={style.tableDateActions}>
+              <TextField
+                id="outlined"
+                type="date"
+                size="small"
+                value={initialDate}
+                onChange={handleChangeInitialDate}
+              />
+              a
+              <TextField
+                id="outlined"
+                type="date"
+                size="small"
+                value={finalDate}
+                onChange={handleChangeFinalDate}
+              />
+            </div>
           </div>
-        </div>
 
-        {/* DataGrid */}
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5]}
-          sx={{
-            "& .MuiDataGrid-footerContainer": { backgroundColor: "white" },
-          }}
-        />
+          {/* DataGrid */}
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            pageSize={5}
+            rowsPerPageOptions={[5]}
+            sx={{
+              "& .MuiDataGrid-footerContainer": { backgroundColor: "white" },
+            }}
+          />
+        </div>
       </div>
-    </div>
+
+      {/* Alerts */}
+      <SnackbarAlert
+        open={openAlert}
+        handleAlert={handleCloseAlert}
+        alertText={alertText}
+        alertType={alertType}
+      />
+    </>
   );
 }
