@@ -20,7 +20,6 @@ const Home = () => {
     {},
   );
 
-  console.log(response);
   return (
     <div className={style.container}>
       <GraphicsComponent />

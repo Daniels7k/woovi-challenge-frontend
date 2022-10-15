@@ -107,7 +107,6 @@ export default function DataTable(props: any) {
     });
   };
 
-  console.log(post);
   const handleEditClick = (despesa: any) => {
     updateDespesaMutation({
       variables: {

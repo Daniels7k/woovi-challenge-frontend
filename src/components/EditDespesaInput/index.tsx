@@ -19,7 +19,6 @@ export default function EditDespesaInput(props: any) {
     type: "",
     message: "",
   });
-  console.log(despesaName);
   useEffect(() => {
     const { despesaName, category, releaseDate, id, value } =
       props.despesaEditData;
