@@ -27,6 +27,7 @@ import { useFragment, useMutation } from "react-relay";
 import graphql from "babel-plugin-relay/macro";
 import { IDespesa } from "../../types/Despesa";
 import EditDespesaInput from "../EditDespesaInput";
+import { RecordSourceSelectorProxy } from "relay-runtime";
 
 export default function DataTable(props: any) {
   const [todayDate, setTodayDate] = useState("");
@@ -94,6 +95,9 @@ export default function DataTable(props: any) {
         value: despesa.value,
         releaseDate: dayjs(despesa.releaseDate).toISOString(),
       },
+      updater: (store: RecordSourceSelectorProxy, response: any) => {
+        post.push(response.createDespesa);
+      },
       onCompleted(data) {
         console.log(data);
       },
@@ -103,6 +107,7 @@ export default function DataTable(props: any) {
     });
   };
 
+  console.log(post);
   const handleEditClick = (despesa: any) => {
     updateDespesaMutation({
       variables: {

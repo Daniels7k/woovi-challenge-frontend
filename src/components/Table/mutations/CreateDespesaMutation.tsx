@@ -13,7 +13,11 @@ export const CreateDespesaMutation = graphql`
       category: $category
       value: $value
     ) {
+      id
       name
+      releaseDate
+      category
+      value
     }
   }
 `;
